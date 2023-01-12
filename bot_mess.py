@@ -38,8 +38,8 @@ def operation_mess(msg):
     return bot_mess
 
 
-def result_mess(msg, dct_lst_user_id, result):
-    digit_1, digit_2, operation = dct_lst_user_id
+def result_mess(msg, dct_lst_user_id):
+    digit_1, digit_2, operation, result = dct_lst_user_id
     bot_mess: str = 'Результат:' \
                     f'\n<i>{digit_1} {operation} {digit_2}</i>' \
                     f'\n<i>= {result}</i>' \

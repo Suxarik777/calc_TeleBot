@@ -5,17 +5,22 @@ from bot_mess import start_mess, menu_mess, complex_digit_1_mess, complex_digit_
                     result_mess, rational_digit_1_mess, rational_digit_2_mess
 from button import but_start, but_menu, but_calc, but_complex_calc, but_operation
 from calculation import calc_operation_complex, calc_operation_rational
+from loger import result_logger
 
 TOKEN = TOKEN_ID
 
 bot = TeleBot(TOKEN)
 
+
+# step save data_user in list: [0] - digit_1, [1] - digit_2, [2] - operation, [3] - result
 dct = {}    # создаём словарик в котором будем по id пользователя хранить введёные им значение ещё и в lst
+what_calc = {}
 
 
 @bot.message_handler(commands=['start'])
 def start_program(msg: types.Message):
     dct[msg.from_user.id] = []  # и при старте по его айди словарика кладём пустой список
+    what_calc[msg.from_user.id] = ''  # создаём пустую строку по ID чтобы потом в логи вывести значение калькулятора
 
     bot.send_message(chat_id=msg.chat.id, text=start_mess(msg), parse_mode='html', reply_markup=but_menu())
 
@@ -28,12 +33,16 @@ def menu(msg: types.Message):
 # Работа с комплексными числами
 @bot.message_handler(commands=['complex_number'])
 def complex_calc(msg: types.Message):
+    what_calc[msg.from_user.id] = 'complex_number'
+
     bot.send_message(chat_id=msg.chat.id, text=complex_digit_1_mess(msg), parse_mode='html', reply_markup=but_menu())
     bot.register_next_step_handler(msg, complex_calc_step_2)
 
 
 @bot.message_handler(commands=['rational_numbers'])
 def rational_calc(msg: types.Message):
+    what_calc[msg.from_user.id] = 'rational_numbers'
+
     bot.send_message(chat_id=msg.chat.id, text=rational_digit_1_mess(msg), parse_mode='html', reply_markup=but_menu())
     bot.register_next_step_handler(msg, rational_calc_step_2)
 
@@ -78,8 +87,11 @@ def complex_calc_result(msg: types.Message):
 
     dct[id_].append(text)
     result = calc_operation_complex(dct[id_])
-    bot_mess = result_mess(msg, dct[id_], result)
+    dct[id_].append(result)
 
+    result_logger(msg, dct[id_], what_calc[id_])
+
+    bot_mess = result_mess(msg, dct[id_])
     bot.send_message(chat_id=msg.from_user.id, text=bot_mess, parse_mode='html',
                      reply_markup=but_start())
 
@@ -128,8 +140,11 @@ def rational_calc_result(msg: types.Message):
 
     dct[id_].append(text)
     result = calc_operation_rational(dct[id_])
-    bot_mess = result_mess(msg, dct[id_], result)
+    dct[id_].append(result)
 
+    result_logger(msg, dct[id_], what_calc[id_])
+
+    bot_mess = result_mess(msg, dct[id_])
     bot.send_message(chat_id=msg.from_user.id, text=bot_mess, parse_mode='html',
                      reply_markup=but_start())
 
