@@ -55,9 +55,6 @@ def complex_calc_step_2(msg: types.Message):
     if text == '':  # если пользователь ничего не написал
         bot.send_message(chat_id=msg.from_user.id, text=f'Ошибка! Нет числа!!! \nЧто делаем?',
                          reply_markup=but_complex_calc())
-    elif text.count('j') != 1:
-        bot.send_message(chat_id=msg.from_user.id, text=f'Ошибка! неправильный формат!!! \nЧто делаем?',
-                         reply_markup=but_complex_calc())
     else:
         dct[id_].append(text)
         bot.send_message(chat_id=msg.from_user.id, text=complex_digit_2_mess(msg), parse_mode='html',
@@ -71,9 +68,6 @@ def complex_calc_operation(msg: types.Message):
 
     if len(dct[id_]) < 1:  # если пользователь не написал второе число
         bot.send_message(chat_id=msg.from_user.id, text=f'Ошибка! Нет второго числа!!! \nЧто делаем?',
-                         reply_markup=but_complex_calc())
-    elif text.count('j') != 1:
-        bot.send_message(chat_id=msg.from_user.id, text=f'Ошибка! неправильный формат!!! \nЧто делаем?',
                          reply_markup=but_complex_calc())
     else:
         dct[id_].append(text)
